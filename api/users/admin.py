@@ -7,7 +7,7 @@ class ProfileInline(admin.StackedInline):  # Use TabularInline for a compact vie
     model = Profile
     can_delete = False
     verbose_name_plural = 'Profile'
-    fields = ('bio', 'image')
+    fields = ('phone', 'addressLine1', 'addressLine2', 'city', 'state', 'postalCode', 'country', 'bio', 'image')
 
 # Extend UserAdmin to include Profile
 class CustomUserAdmin(UserAdmin):

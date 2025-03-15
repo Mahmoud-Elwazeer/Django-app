@@ -28,6 +28,28 @@ class UpdateUser(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
+class DeleteUser(generics.DestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Return the currently authenticated user
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        # Get the current user
+        user = self.get_object()
+
+        # Delete the user
+        user.delete()
+
+        # Return a success response
+        return Response(
+            {"message": "User deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
 class Login(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]

@@ -1,16 +1,32 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Profile
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['phone', 'addressLine1', 'addressLine2', 'city', 'state', 'postalCode', 'country', 'image', 'bio']
+        extra_kwargs = {
+            'phone': {'required': False},
+            'addressLine1': {'required': False},
+            'addressLine2': {'required': False},
+            'city': {'required': False},
+            'state': {'required': False},
+            'postalCode': {'required': False},
+            'country': {'required': False},
+            'image': {'required': False},
+            'bio': {'required': False},
+        }
 
 class UserSerializer(serializers.ModelSerializer):
-    bio = serializers.CharField(source='profile.bio', required=False, allow_blank=True)
-    image = serializers.ImageField(source='profile.image', required=False)
+    profile = ProfileSerializer(required=False)
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "first_name", "last_name", 'bio', 'image']
+        fields = ["id", "username", "email", "password", "first_name", "last_name", 'profile']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
             }
 
     def create(self, validated_data):
@@ -30,13 +46,12 @@ class UserUpdateSerializer(UserSerializer):
 
     def update(self, instance, validated_data):
         # Extract profile data from validated_data
+
         if 'password' in validated_data:
             raise serializers.ValidationError({"password": "Updating password is not allowed"})
-
-        profile_data = {
-            'bio': validated_data.pop('profile', {}).get('bio', instance.profile.bio),
-            'image': validated_data.pop('profile', {}).get('image', instance.profile.image),
-        }
+        
+        # Extract profile data from validated_data
+        profile_data = validated_data.pop('profile', {})
 
         # Update the User instance (excluding email and password)
         for attr, value in validated_data.items():
