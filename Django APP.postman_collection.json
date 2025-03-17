@@ -1,0 +1,269 @@
+{
+	"info": {
+		"_postman_id": "ab21a59a-fc9d-4380-9886-40e583d62ca8",
+		"name": "Django APP",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33651104"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Log In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response",
+									"const jsonResponse = pm.response.json();",
+									"console.log(jsonResponse)",
+									"",
+									"// Check if the token exists in the response",
+									"if (jsonResponse.access) {",
+									"    // Set the token in the environment variable",
+									"    pm.environment.set(\"authToken\", jsonResponse.access);",
+									"",
+									"    console.log(\"Token saved: \", jsonResponse.access);",
+									"} else {",
+									"    console.error(\"Token not found in the response\");",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"user9@gmail.com\",\n    \"password\": \"User@123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/api/v1/users/login"
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0MTIwMzk2MSwiaWF0IjoxNzQxMTE3NTYxLCJqdGkiOiJiMjg2ZjI1ZGZkYzQ0ODFkOThiMzUzZjZkMzdlNzNmZiIsInVzZXJfaWQiOjl9.HmXvtMcbo6_N4xTvBXi3fdOD8RAuPJxcSr6yz_OY3QA\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/api/v1/users/token/refresh"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user13@gmail.com\",\n    \"username\": \"user13\",\n    \"password\": \"User@123\",\n    \"first_name\": \"Mahmoud\",  // optional\n    \"last_name\": \"Elwazeer\"   // optional\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/api/v1/users/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "update current user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "Ahmed",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "Mahmoud",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "profile.image",
+									"type": "file",
+									"src": "postman-cloud:///1f0010de-eb2e-4730-a887-687e48882612",
+									"disabled": true
+								},
+								{
+									"key": "profile.bio",
+									"value": "xxx",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "profile.phone",
+									"value": "+201021489200",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": "{{base_url}}/api/v1/users/update"
+					},
+					"response": []
+				},
+				{
+					"name": "get current user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/users/me"
+					},
+					"response": []
+				},
+				{
+					"name": "delete current user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/api/v1/users/delete"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "get all catagories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/products/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "get all products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/products"
+					},
+					"response": []
+				},
+				{
+					"name": "get one profuct",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/products/2"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "create order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order\": {\n        \"totalPrice\": 250,\n        \"shippingPrice\": 50\n    },\n    \"orderItems\": [\n        {\n            \"product\": 2,\n            \"quantity\": 1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/api/v1/orders/create"
+					},
+					"response": []
+				},
+				{
+					"name": "list all my orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/orders"
+					},
+					"response": []
+				},
+				{
+					"name": "get details for order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{authToken}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/orders/3"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

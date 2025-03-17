@@ -1,8 +1,7 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
-from api.products.serializers import ProductSerializer  # Assuming you have a ProductSerializer
 from api.products.models import Product
-
+from api.users.models import Profile
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.ReadOnlyField(source="product.name") 
@@ -35,6 +34,16 @@ class CreateOrderSerializer(serializers.Serializer):
     orderItems = CreateOrderItemSerializer(many=True)
 
     def validate(self, data):
+        # Get the user's profile
+        user = self.context["request"].user
+        profile = Profile.objects.get(user=user)
+
+        # Check if required profile fields are populated
+        if not profile.addressLine1 or not profile.city or not profile.state:
+            raise serializers.ValidationError(
+                {"error": "Please update your address (addressLine1, city, and state) in your profile before creating an order."}
+            )
+
         # Validate order data
         order_data = data["order"]
         if "totalPrice" not in order_data:
@@ -52,6 +61,13 @@ class CreateOrderSerializer(serializers.Serializer):
         for item in order_items:
             product = item["product"]
             quantity = item["quantity"]
+            # Check if the product is stored and has sufficient quantity
+            if product.is_stored:
+                if product.available_quantity is None or product.available_quantity < quantity:
+                    raise serializers.ValidationError(
+                        {"error": f"Insufficient quantity for product {product.name}. Available: {product.available_quantity}"}
+                    )
+
             total_price += product.price * quantity
 
         # Add shipping price
@@ -77,15 +93,23 @@ class CreateOrderSerializer(serializers.Serializer):
             status="pending",  # Default status
         )
 
-        # Create order items
+        # Create order items and update product quantities
         for item_data in order_items_data:
+            product = item_data["product"]
+            quantity = item_data["quantity"]
+
+            # Decrease available_quantity for stored products
+            if product.is_stored:
+                product.available_quantity -= quantity
+                product.save()
+
             OrderItem.objects.create(
                 order=order,
-                product=item_data["product"],
-                quantity=item_data["quantity"],
-                price=item_data["product"].price,  # Use the product's price
+                product=product,
+                quantity=quantity,
+                price=product.price,  # Use the product's price
             )
-
+        
         # Calculate totals (optional, if you want to ensure consistency)
         order.calculate_totals()
 
