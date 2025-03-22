@@ -40,6 +40,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Use Spectacular Schema
 }
 
 SIMPLE_JWT = {
@@ -58,9 +59,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     'api.users',
     'api.products',
-    'api.orders'
+    'api.orders',
 ]
 
 MIDDLEWARE = [
