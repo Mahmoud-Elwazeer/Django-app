@@ -19,7 +19,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+# for normal user using JWT
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 
+# Restrict access to admin users only
+def admin_required(user):
+    return user.is_authenticated and user.is_staff  # Only allow staff (admin) users
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,9 +37,11 @@ urlpatterns = [
     # Spectacular API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     
-    # Swagger UI
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # # Protect Swagger UI with authentication
+    # path('api/docs/', login_required(SpectacularSwaggerView.as_view(url_name='schema')), name='swagger-ui'),
+    # # Protect ReDoc UI with authentication
+    # path('api/redoc/', login_required(SpectacularRedocView.as_view(url_name='schema')), name='redoc'),
 
-    # ReDoc UI
-    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/docs/', user_passes_test(admin_required)(SpectacularSwaggerView.as_view(url_name='schema')), name='swagger-ui'),
+    path('api/redoc/', user_passes_test(admin_required)(SpectacularRedocView.as_view(url_name='schema')), name='redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

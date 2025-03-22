@@ -48,6 +48,18 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
 }
 
+
+# when using JWT
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'My E-Commerce API',
+#     'DESCRIPTION': 'API documentation for my e-commerce project',
+#     'VERSION': '1.0.0',
+#     'SERVE_PERMISSIONS': ['rest_framework.permissions.IsAuthenticated'],  # Restrict API docs
+#     'SWAGGER_UI_SETTINGS': {
+#         'persistAuthorization': True,  # Allow users to enter JWT tokens
+#     },
+# }
+
 # Application definition
 
 INSTALLED_APPS = [
