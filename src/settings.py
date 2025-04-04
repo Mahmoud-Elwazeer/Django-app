@@ -48,6 +48,14 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
 }
 
+# ref: https://www.youtube.com/watch?v=b1GYbVPOlBc
+# https://django-jazzmin.readthedocs.io/configuration/
+JAZZMIN_SETTINGS = { 
+    "site_title": "E-Commerce Admin",
+    "copyright": "Qaf-Solutions Ltd",
+    "show_ui_builder": True,
+}
+
 
 # when using JWT
 # SPECTACULAR_SETTINGS = {
@@ -63,6 +71,7 @@ SIMPLE_JWT = {
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
